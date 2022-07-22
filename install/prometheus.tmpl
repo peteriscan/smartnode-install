@@ -27,6 +27,10 @@ scrape_configs:
   - job_name: 'besu'
     static_configs:
       - targets: ['${EC_HOSTNAME:-eth1}:${EC_METRICS_PORT:-9105}']
+  
+  - job_name: 'akula'
+    static_configs:
+      - targets: ['${EC_HOSTNAME:-eth1}:${EC_METRICS_PORT:-9105}']
 
   - job_name: 'eth2'
     static_configs:

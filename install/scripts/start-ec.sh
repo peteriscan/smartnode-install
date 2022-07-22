@@ -25,12 +25,14 @@ if [ "$NETWORK" = "mainnet" ]; then
     GETH_NETWORK=""
     NETHERMIND_NETWORK="mainnet"
     BESU_NETWORK="mainnet"
+    AKULA_NETWORK="mainnet"
     INFURA_NETWORK="mainnet"
     POCKET_NETWORK="eth-mainnet"
 elif [ "$NETWORK" = "prater" ]; then
     GETH_NETWORK="--goerli"
     NETHERMIND_NETWORK="goerli"
     BESU_NETWORK="goerli"
+    AKULA_NETWORK="goerli"
     INFURA_NETWORK="goerli"
     POCKET_NETWORK="eth-goerli"
 else
@@ -191,6 +193,33 @@ if [ "$CLIENT" = "besu" ]; then
 
     if [ "$BESU_JVM_HEAP_SIZE" -gt "0" ]; then
         CMD="env JAVA_OPTS=\"-Xmx${BESU_JVM_HEAP_SIZE}m\" $CMD"
+    fi
+
+    exec ${CMD}
+
+fi
+
+
+# Akula startup
+if [ "$CLIENT" = "akula" ]; then
+
+    # Performance tuning for ARM systems
+    UNAME_VAL=$(uname -m)
+    if [ "$UNAME_VAL" = "arm64" ] || [ "$UNAME_VAL" = "aarch64" ]; then
+
+        # Define the performance tuning prefix
+        define_perf_prefix
+
+    fi
+
+    CMD="$PERF_PREFIX /usr/local/bin/akula --chain=$AKULA_NETWORK --datadir=/ethclient/akula --rpc-listen-address=0.0.0.0:${EC_HTTP_PORT:-8545} $EC_ADDITIONAL_FLAGS"
+
+    if [ ! -z "$EC_MAX_PEERS" ]; then
+        CMD="$CMD --max-peers=$EC_MAX_PEERS"
+    fi
+
+    if [ ! -z "$EC_P2P_PORT" ]; then
+        CMD="$CMD --listen-port=$EC_P2P_PORT --discv4-port=$EC_P2P_PORT"
     fi
 
     exec ${CMD}
