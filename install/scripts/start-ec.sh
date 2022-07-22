@@ -212,7 +212,7 @@ if [ "$CLIENT" = "akula" ]; then
 
     fi
 
-    CMD="$PERF_PREFIX /usr/local/bin/akula --chain=$AKULA_NETWORK --datadir=/ethclient/akula --rpc-listen-address=0.0.0.0:${EC_HTTP_PORT:-8545} $EC_ADDITIONAL_FLAGS"
+    CMD="$PERF_PREFIX akula --chain=$AKULA_NETWORK --datadir=/ethclient/akula --rpc-listen-address=0.0.0.0:${EC_HTTP_PORT:-8545} $EC_ADDITIONAL_FLAGS"
 
     if [ ! -z "$EC_MAX_PEERS" ]; then
         CMD="$CMD --max-peers=$EC_MAX_PEERS"
