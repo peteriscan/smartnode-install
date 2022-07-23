@@ -204,7 +204,6 @@ fi
 if [ "$CLIENT" = "akula" ]; then
 
     export RUST_BACKTRACE=1
-    #export RUST_BACKTRACE=full
     CMD="akula --chain=$AKULA_NETWORK --datadir=/ethclient/akula --rpc-listen-address=0.0.0.0:${EC_HTTP_PORT:-8545} $EC_ADDITIONAL_FLAGS"
 
     if [ ! -z "$EC_MAX_PEERS" ]; then
