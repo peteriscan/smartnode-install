@@ -203,16 +203,9 @@ fi
 # Akula startup
 if [ "$CLIENT" = "akula" ]; then
 
-    # Performance tuning for ARM systems
-    UNAME_VAL=$(uname -m)
-    if [ "$UNAME_VAL" = "arm64" ] || [ "$UNAME_VAL" = "aarch64" ]; then
-
-        # Define the performance tuning prefix
-        define_perf_prefix
-
-    fi
-
-    CMD="$PERF_PREFIX akula --chain=$AKULA_NETWORK --datadir=/ethclient/akula --rpc-listen-address=0.0.0.0:${EC_HTTP_PORT:-8545} $EC_ADDITIONAL_FLAGS"
+    export RUST_BACKTRACE=1
+    #export RUST_BACKTRACE=full
+    CMD="akula --chain=$AKULA_NETWORK --datadir=/ethclient/akula --rpc-listen-address=0.0.0.0:${EC_HTTP_PORT:-8545} $EC_ADDITIONAL_FLAGS"
 
     if [ ! -z "$EC_MAX_PEERS" ]; then
         CMD="$CMD --max-peers=$EC_MAX_PEERS"
