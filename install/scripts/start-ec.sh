@@ -35,6 +35,13 @@ elif [ "$NETWORK" = "prater" ]; then
     AKULA_NETWORK="goerli"
     INFURA_NETWORK="goerli"
     POCKET_NETWORK="eth-goerli"
+elif [ "$NETWORK" = "ropsten" ]; then
+    GETH_NETWORK="--ropsten"
+    NETHERMIND_NETWORK="ropsten"
+    BESU_NETWORK="ropsten"
+    AKULA_NETWORK="ropsten"
+    INFURA_NETWORK="ropsten"
+    POCKET_NETWORK="eth-ropsten"
 else
     echo "Unknown network [$NETWORK]"
     exit 1
