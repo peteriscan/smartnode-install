@@ -34,18 +34,26 @@ if [ "$NETWORK" = "mainnet" ]; then
     GETH_NETWORK=""
     RP_NETHERMIND_NETWORK="mainnet"
     BESU_NETWORK="--network=mainnet"
+    ERIGON_NETWORK="--chain=mainnet"
+    RETH_NETWORK="--chain mainnet"
 elif [ "$NETWORK" = "prater" ]; then
     GETH_NETWORK="--goerli"
     RP_NETHERMIND_NETWORK="goerli"
     BESU_NETWORK="--network=goerli"
+    ERIGON_NETWORK="--chain=goerli"
+    RETH_NETWORK="--chain goerli"
 elif [ "$NETWORK" = "devnet" ]; then
     GETH_NETWORK="--holesky"
     RP_NETHERMIND_NETWORK="holesky"
     BESU_NETWORK="--network=holesky"
+    ERIGON_NETWORK="--chain=holesky"
+    RETH_NETWORK="--chain holesky"
 elif [ "$NETWORK" = "holesky" ]; then
     GETH_NETWORK="--holesky"
     RP_NETHERMIND_NETWORK="holesky"
     BESU_NETWORK="--network=holesky"
+    ERIGON_NETWORK="--chain=holesky"
+    RETH_NETWORK="--chain holesky"
 else
     echo "Unknown network [$NETWORK]"
     exit 1
@@ -286,6 +294,76 @@ if [ "$CLIENT" = "besu" ]; then
 
     if [ "$BESU_JVM_HEAP_SIZE" -gt "0" ]; then
         CMD="env JAVA_OPTS=\"-Xmx${BESU_JVM_HEAP_SIZE}m\" $CMD"
+    fi
+
+    exec ${CMD}
+
+fi
+
+# Erigon startup
+if [ "$CLIENT" = "erigon" ]; then
+
+    CMD="$PERF_PREFIX /usr/local/bin/erigon $ERIGON_NETWORK \
+        --datadir=/ethclient/erigon \
+        --http \
+        --http.addr=0.0.0.0 \
+        --http.port=${EC_HTTP_PORT:-8545} \
+        --http.api=eth,net,web3 \
+        --http.corsdomain=* \
+        --ws \
+        --authrpc.addr=0.0.0.0 \
+        --authrpc.port=${EC_ENGINE_PORT:-8551} \
+        --authrpc.jwtsecret=/secrets/jwtsecret \
+        --authrpc.vhosts=* \
+        --pprof \
+        $EC_ADDITIONAL_FLAGS"
+
+    if [ ! -z "$ETHSTATS_LABEL" ] && [ ! -z "$ETHSTATS_LOGIN" ]; then
+        CMD="$CMD --ethstats=$ETHSTATS_LABEL:$ETHSTATS_LOGIN"
+    fi
+
+    if [ ! -z "$EC_MAX_PEERS" ]; then
+        CMD="$CMD --maxpeers=$EC_MAX_PEERS"
+    fi
+
+    if [ "$ENABLE_METRICS" = "true" ]; then
+        CMD="$CMD --metrics --metrics.addr=0.0.0.0 --metrics.port=$EC_METRICS_PORT"
+    fi
+
+    if [ ! -z "$EC_P2P_PORT" ]; then
+        CMD="$CMD --port=$EC_P2P_PORT"
+    fi
+
+    exec ${CMD}
+
+fi
+
+# Reth startup
+if [ "$CLIENT" = "reth" ]; then
+
+    CMD="$PERF_PREFIX /usr/local/bin/reth node $RETH_NETWORK \
+        --datadir /ethclient/reth \
+        --http \
+        --http.addr 0.0.0.0 \
+        --http.port ${EC_HTTP_PORT:-8545} \
+        --http.api eth,net,web3 \
+        --http.corsdomain '*' \
+        --ws \
+        --ws.addr 0.0.0.0 \
+        --ws.port ${EC_WS_PORT:-8546} \
+        --ws.api eth,net,web3 \
+        --ws.origins '*' \
+        --authrpc.addr 0.0.0.0 \
+        --authrpc.port ${EC_ENGINE_PORT:-8551} \
+        --authrpc.jwtsecret /secrets/jwtsecret \
+        $EC_ADDITIONAL_FLAGS"
+
+    if [ "$ENABLE_METRICS" = "true" ]; then
+        CMD="$CMD --metrics 0.0.0.0:$EC_METRICS_PORT"
+    fi
+
+    if [ ! -z "$EC_P2P_PORT" ]; then
+        CMD="$CMD --port $EC_P2P_PORT"
     fi
 
     exec ${CMD}
