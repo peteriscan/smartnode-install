@@ -48,6 +48,12 @@ elif [ "$NETWORK" = "devnet" ]; then
     BESU_NETWORK="--network=goerli"
     ERIGON_NETWORK="--chain=goerli"
     RETH_NETWORK="--chain goerli"
+elif [ "$NETWORK" = "holesky" ]; then
+    GETH_NETWORK="--holesky"
+    RP_NETHERMIND_NETWORK="holesky"
+    BESU_NETWORK="--network=holesky"
+    ERIGON_NETWORK="--chain=holesky"
+    RETH_NETWORK="--chain holesky"
 else
     echo "Unknown network [$NETWORK]"
     exit 1
